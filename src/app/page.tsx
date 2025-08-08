@@ -41,11 +41,46 @@ const formatCurrency = (amount: number, currency: string): string => {
   }
 };
 
+// Function to calculate totals by category
+const calculateCategoryTotals = (data: FinancialData[]) => {
+  const totals: Record<string, number> = {};
+  
+  data.forEach(item => {
+    if (totals[item.category]) {
+      totals[item.category] += item.price;
+    } else {
+      totals[item.category] = item.price;
+    }
+  });
+  
+  return Object.entries(totals)
+    .map(([category, total]) => ({ category, total }))
+    .sort((a, b) => b.total - a.total);
+};
+
+// Function to calculate totals by retailer
+const calculateRetailerTotals = (data: FinancialData[]) => {
+  const totals: Record<string, number> = {};
+  
+  data.forEach(item => {
+    if (totals[item.retailer]) {
+      totals[item.retailer] += item.price;
+    } else {
+      totals[item.retailer] = item.price;
+    }
+  });
+  
+  return Object.entries(totals)
+    .map(([retailer, total]) => ({ retailer, total }))
+    .sort((a, b) => b.total - a.total);
+};
+
 export default function Home() {
   const { currency } = useSettings();
   const [data, setData] = useState<FinancialData[]>([]);
   const [timeView, setTimeView] = useState("daily");
   const [groupBy, setGroupBy] = useState("category");
+  const [showTotals, setShowTotals] = useState(true);
   const chartRef = useRef<HTMLDivElement>(null);
 
   const addData = (newData: Omit<FinancialData, "id">) => {
@@ -121,6 +156,12 @@ export default function Home() {
   };
 
   const filteredData = filterData(data, timeView);
+  
+  // Calculate totals for display
+  const categoryTotals = calculateCategoryTotals(data);
+  const retailerTotals = calculateRetailerTotals(data);
+  const totalAmount = data.reduce((sum, item) => sum + item.price, 0);
+  const filteredTotalAmount = filteredData.reduce((sum, item) => sum + item.price, 0);
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-8">
@@ -128,7 +169,16 @@ export default function Home() {
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-2xl font-bold">Financial Tracker</CardTitle>
-            <SettingsDialog />
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowTotals(!showTotals)}
+              >
+                {showTotals ? "Hide" : "Show"} Totals
+              </Button>
+              <SettingsDialog />
+            </div>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="entry" className="w-full">
@@ -139,6 +189,84 @@ export default function Home() {
               <TabsContent value="entry">
                 <div className="mt-4">
                   <FinancialDataForm onAddData={addData} />
+                  
+                  {showTotals && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                        <Card>
+                          <CardContent className="pt-4">
+                            <h3 className="text-lg font-semibold">Total Amount</h3>
+                            <p className="text-2xl font-bold mt-2">{formatCurrency(totalAmount, currency)}</p>
+                            <p className="text-sm text-muted-foreground mt-1">All time</p>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card>
+                          <CardContent className="pt-4">
+                            <h3 className="text-lg font-semibold">Filtered Total</h3>
+                            <p className="text-2xl font-bold mt-2">{formatCurrency(filteredTotalAmount, currency)}</p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {timeView === "daily" && "Today"}
+                              {timeView === "weekly" && "Last 7 days"}
+                              {timeView === "monthly" && "Last 30 days"}
+                              {timeView === "all" && "All time"}
+                            </p>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card>
+                          <CardContent className="pt-4">
+                            <h3 className="text-lg font-semibold">Total Entries</h3>
+                            <p className="text-2xl font-bold mt-2">{data.length}</p>
+                            <p className="text-sm text-muted-foreground mt-1">Records</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Category Totals</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            {categoryTotals.length === 0 ? (
+                              <p className="text-muted-foreground">No data available</p>
+                            ) : (
+                              <div className="space-y-3">
+                                {categoryTotals.map(({ category, total }) => (
+                                  <div key={category} className="flex justify-between items-center">
+                                    <span className="capitalize">{category}</span>
+                                    <span className="font-medium">{formatCurrency(total, currency)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                        
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Retailer Totals</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            {retailerTotals.length === 0 ? (
+                              <p className="text-muted-foreground">No data available</p>
+                            ) : (
+                              <div className="space-y-3">
+                                {retailerTotals.map(({ retailer, total }) => (
+                                  <div key={retailer} className="flex justify-between items-center">
+                                    <span className="capitalize">{retailer}</span>
+                                    <span className="font-medium">{formatCurrency(total, currency)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </>
+                  )}
+                  
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold mb-4">Recent Entries</h3>
                     {data.length === 0 ? (
