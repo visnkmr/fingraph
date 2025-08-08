@@ -1,24 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Financial Tracker
+
+A Next.js application for tracking daily financial data with category and retailer information. The app allows users to visualize their spending patterns through rolling bar charts and export the data as PDF.
+
+## Features
+
+- Add daily financial data with date, price, category, and retailer
+- View data in daily, weekly, or monthly rolling charts
+- Group data by category or retailer
+- Export charts to PDF
+- Responsive design using Tailwind CSS and shadcn/ui components
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Dependencies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses the following key dependencies:
+
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- shadcn/ui components
+- Recharts for data visualization
+- Zod for form validation
+- jsPDF and html2canvas for PDF export
+
+## Project Structure
+
+- `src/app/page.tsx` - Main page component
+- `src/components/custom/financial-data-form.tsx` - Form for adding financial data
+- `src/components/custom/financial-chart.tsx` - Chart component for visualizing data
+- `src/components/ui/` - shadcn/ui components
+- `src/lib/utils.ts` - Utility functions
+
+## Usage
+
+1. Add financial data using the form:
+   - Date (defaults to today)
+   - Price (defaults to 0)
+   - Category (defaults to shopping)
+   - Retailer (defaults to offline)
+
+2. View data in charts:
+   - Switch between daily, weekly, or monthly views
+   - Group by category or retailer
+
+3. Export charts to PDF using the export button
 
 ## Learn More
 
@@ -26,8 +67,6 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 
