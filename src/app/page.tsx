@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { SettingsDialog } from "@/components/custom/settings-dialog";
 import { useSettings } from "@/context/settings-context";
+import MCPDemo from "@/components/mcp-demo";
+import FinancialAnalysis from "@/components/financial-analysis";
 
 interface FinancialData {
   id: string;
@@ -335,6 +337,12 @@ export default function Home() {
             </Tabs>
           </CardContent>
         </Card>
+        <div className="mt-8 w-full">
+          <FinancialAnalysis data={data} />
+        </div>
+        <div className="mt-8 w-full">
+          <MCPDemo />
+        </div>
       </div>
     </main>
   );
