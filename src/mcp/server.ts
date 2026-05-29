@@ -49,7 +49,7 @@ export class MCPServer {
   // Financial handlers
   registerFinancialHandlers(): void {
     // Add financial data
-    this.registerHandler('financial.add', async (req, context) => {
+    this.registerHandler('financial.add', async (req) => {
       const { data } = req.params || {};
       
       if (!data || !data.date || !data.price || !data.category || !data.retailer) {
@@ -75,7 +75,7 @@ export class MCPServer {
     });
 
     // Get financial summary
-    this.registerHandler('financial.summary', async (req, context) => {
+    this.registerHandler('financial.summary', async (req) => {
       const { data, timeFilter } = req.params || {};
       
       if (!data || !Array.isArray(data)) {
@@ -87,12 +87,12 @@ export class MCPServer {
         };
       }
 
-      const summary = calculateFinancialSummary(data, timeFilter, context.currency || 'USD');
+      const summary = calculateFinancialSummary(data, timeFilter);
       return { result: summary };
     });
 
     // Get financial data
-    this.registerHandler('financial.get', async (req, context) => {
+    this.registerHandler('financial.get', async () => {
       // In a real implementation, you would fetch this from a database
       // For now, we'll just return an empty array
       return { result: [] };
@@ -121,8 +121,7 @@ export class MCPServer {
 // Helper function to calculate financial summary
 function calculateFinancialSummary(
   data: any[], 
-  timeFilter: TimeFilter | undefined, 
-  currency: string
+  timeFilter: TimeFilter | undefined
 ): FinancialSummary {
   // Filter data based on time filter
   const filteredData = filterDataByTime(data, timeFilter);

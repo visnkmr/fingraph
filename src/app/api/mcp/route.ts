@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const mcpRequest: MCPRequest = body;
     
     // Create context (you might want to extract user info from auth headers)
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const currency = cookieStore.get('currency')?.value || 'USD';
     
     const context: MCPContext = {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     return new Response(JSON.stringify(response), {
       headers: { 'Content-Type': 'application/json' }
     });
-  } catch (error) {
+    } catch {
     return new Response(JSON.stringify({
       error: {
         code: -32700,

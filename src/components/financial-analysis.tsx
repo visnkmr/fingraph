@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MCPClient } from '@/mcp/client';
 import { FinancialData, FinancialSummary, TimeFilter } from '@/mcp/types';
 
@@ -10,9 +10,8 @@ export default function FinancialAnalysis({ data }: { data: FinancialData[] }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const client = new MCPClient();
-
-  const fetchSummary = async () => {
+  const fetchSummary = useCallback(async () => {
+    const client = new MCPClient();
     setLoading(true);
     setError(null);
     try {
@@ -23,13 +22,13 @@ export default function FinancialAnalysis({ data }: { data: FinancialData[] }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [data, timeFilter]);
 
   useEffect(() => {
     if (data.length > 0) {
       fetchSummary();
     }
-  }, [data, timeFilter]);
+  }, [fetchSummary, data.length]);
 
   const handleTimeFilterChange = (filterType: TimeFilter['type']) => {
     setTimeFilter({ type: filterType });

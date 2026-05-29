@@ -39,7 +39,7 @@ const formatCurrency = (amount: number, currency: string): string => {
       currency: currency,
       minimumFractionDigits: 2,
     }).format(amount);
-  } catch (e) {
+  } catch {
     // Fallback if currency is not supported
     return `${currency} ${amount.toFixed(2)}`;
   }
